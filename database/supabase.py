@@ -18,8 +18,16 @@ for env_path in (BASE_DIR / ".env", BASE_DIR / "backend" / ".env"):
         load_dotenv(env_path)
 
 SUPABASE_URL = (os.getenv("SUPABASE_URL") or "").strip()
-SUPABASE_ANON_KEY = (os.getenv("SUPABASE_ANON_KEY") or "").strip()
-SUPABASE_SERVICE_ROLE_KEY = (os.getenv("SUPABASE_SERVICE_ROLE_KEY") or "").strip()
+SUPABASE_ANON_KEY = (
+    os.getenv("SUPABASE_ANON_KEY")
+    or os.getenv("SUPABASE_PUBLISHABLE_KEY")
+    or ""
+).strip()
+SUPABASE_SERVICE_ROLE_KEY = (
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    or os.getenv("SUPABASE_SECRET_KEY")
+    or ""
+).strip()
 
 
 def _looks_like_placeholder(value: str) -> bool:
