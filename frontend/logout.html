@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logout</title>
+    <style>
+      :root { --bg: #f8d9e5; --panel: #ffffff; --text: #1d1d22; --muted: #7c7880; --line: #eae5ea; --pink: #ff4f9c; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); }
+      .wrap { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+      .card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; width: min(420px, 100%); padding: 30px 24px; text-align: center; box-shadow: 0 18px 32px rgba(52, 30, 40, 0.08); }
+      h2 { margin: 0 0 12px; }
+      p { color: var(--muted); margin: 0 0 20px; }
+      .btn { border: none; border-radius: 12px; background: linear-gradient(90deg, #ff4f9c, #ff7fae); color: white; padding: 12px 18px; font-weight: 700; cursor: pointer; }
+      .link { margin-top: 16px; display: inline-block; color: var(--pink); font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h2>Đăng xuất</h2>
+        <p>Bạn đã đăng xuất khỏi hệ thống quản trị thành công.</p>
+        <button class="btn" type="button" onclick="location.href='admin.html'">Quay lại Dashboard</button>
+        <div><a class="link" href="admin.html">Về trang chủ</a></div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin</title>
+    <style>
+      :root {
+        --pink-bg: #f6d2e3;
+        --panel-bg: #f3f2f5;
+        --card: #f7f7f8;
+        --sidebar: #f2f0f4;
+        --text: #1f2430;
+        --muted: #7a7d86;
+        --line: #e8e4ea;
+        --primary: #ff3ea8;
+        --primary-dark: #ef2c90;
+        --primary-soft: #ffe6f4;
+        --blue: #5ebef8;
+        --deep-blue: #4d77ff;
+        --green: #1ebf9d;
+        --orange: #f5a623;
+        --purple: #9b63ff;
+        --red: #ff5d7a;
+        --shadow: 0 18px 36px rgba(32, 29, 46, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--pink-bg);
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px;
+      }
+
+      .app-shell {
+        width: min(1200px, 100%);
+        min-height: 860px;
+        background: rgba(255,255,255,0.16);
+        border-radius: 28px;
+        border: 2px solid rgba(0,0,0,0.05);
+        box-shadow: 0 30px 70px rgba(126, 59, 100, 0.08);
+      }
+
+      .dashboard {
+        display: flex;
+        background: #f5f3f5;
+        border-radius: 28px;
+        overflow: hidden;
+        min-height: 820px;
+      }
+
+      .sidebar {
+        width: 235px;
+        background: rgba(247, 246, 249, 0.95);
+        padding: 26px 18px 20px;
+        border-right: 1px solid var(--line);
+      }
+
+      .logo {
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        margin: 8px 0 24px;
+        color: #1b1d22;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 12px;
+        border-radius: 12px;
+        color: #2d313a;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .nav-item.active {
+        background: linear-gradient(90deg, #ff5eb9, #ff3ea8);
+        color: white;
+        box-shadow: 0 10px 18px rgba(255, 62, 168, 0.2);
+      }
+
+      .nav-item .icon {
+        width: 20px;
+        text-align: center;
+        font-size: 18px;
+      }
+
+      .nav-spacer {
+        flex: 1;
+      }
+
+      .main {
+        flex: 1;
+        padding: 20px 18px 16px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        background: rgba(255,255,255,0.42);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 18px;
+        padding: 14px 18px;
+      }
+
+      .user-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 260px;
+      }
+
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f4d0d7, #b38f8d);
+        border: 2px solid rgba(0,0,0,0.05);
+      }
+
+      .welcome {
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .welcome strong {
+        font-size: 13px;
+        color: var(--text);
+      }
+
+      .search-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: rgba(255,255,255,0.32);
+        border-radius: 15px;
+        border: 1px solid var(--line);
+        padding: 10px 14px;
+      }
+
+      .search {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 15px;
+        color: var(--text);
+      }
+
+      .search::placeholder {
+        color: #a3a3a7;
+      }
+
+      .tool-icons {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: #20242f;
+        font-size: 22px;
+      }
+
+      .summary-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .stat-card {
+        background: rgba(255,255,255,0.38);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 18px;
+        padding: 18px 18px 14px;
+        min-height: 128px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 10px 18px rgba(31, 36, 48, 0.03);
+      }
+
+      .stat-inner {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+      }
+
+      .badge-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        background: linear-gradient(135deg, #ff4bb6, #ff7f5a);
+      }
+
+      .stat-text {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .stat-value {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1.1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .panel {
+        background: rgba(255,255,255,0.32);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 18px;
+        padding: 16px 16px 12px;
+        min-height: 250px;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .panel-title {
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .filter-tabs {
+        display: flex;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        align-items: center;
+      }
+
+      .chip {
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: #f5f5f7;
+      }
+
+      .chip.active {
+        background: var(--primary-soft);
+        color: var(--primary-dark);
+      }
+
+      .chart-box {
+        height: 180px;
+        position: relative;
+      }
+
+      .chart-box svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .axis-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .product-item {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        gap: 12px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+
+      .product-item:last-child {
+        border-bottom: none;
+      }
+
+      .thumb {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #e9d7f5, #f7d7a6);
+        overflow: hidden;
+      }
+
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .product-name {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .product-meta {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .product-price {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .list-row {
+        display: grid;
+        grid-template-columns: 1.7fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .order-panel {
+        background: rgba(255,255,255,0.32);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 18px;
+        padding: 18px 16px 10px;
+      }
+
+      .order-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .order-badge {
+        color: var(--red);
+        font-size: 17px;
+        font-weight: 800;
+      }
+
+      .select-box {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255,255,255,0.5);
+        padding: 8px 12px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .table {
+        width: 100%;
+        margin-top: 14px;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        padding: 12px 8px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .table th {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      .product-mini {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mini-thumb {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ffd6d1, #f7d2d6);
+        overflow: hidden;
+      }
+
+      .mini-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        border-radius: 8px;
+        padding: 5px 8px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .status-paid {
+        background: #dff8ee;
+        color: #17875d;
+      }
+
+      .status-pending {
+        background: #fff1d9;
+        color: #af7b14;
+      }
+
+      .donut-panel {
+        background: rgba(255,255,255,0.32);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 18px;
+        padding: 18px 16px;
+      }
+
+      .donut-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 28px;
+      }
+
+      .donut {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: conic-gradient(
+          #ff73ba 0 28%,
+          #f5b7d5 28% 47%,
+          #8dc8f8 47% 63%,
+          #85e6bc 63% 80%,
+          #fbc759 80% 100%
+        );
+        position: relative;
+      }
+
+      .donut::before {
+        content: "";
+        position: absolute;
+        inset: 30px;
+        background: rgba(245,245,247,0.9);
+        border-radius: 50%;
+      }
+
+      .donut-inner {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 18px;
+        z-index: 1;
+      }
+
+      .legend {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(95px, 1fr));
+        gap: 10px 12px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      @media (max-width: 980px) {
+        .dashboard {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .summary-row, .content-grid, .list-row {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 700px) {
+        .summary-row, .content-grid, .list-row {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .search-area {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="dashboard">
+        <aside class="sidebar">
+          <div class="logo">Logo</div>
+
+          <nav class="nav">
+            <div class="nav-item active"><span class="icon">◔</span> Dashboard</div>
+            <div class="nav-item"><span class="icon">◎</span> Analytics</div>
+            <div class="nav-item"><span class="icon">▣</span> Products</div>
+            <div class="nav-item"><span class="icon">◍</span> Payment</div>
+            <div class="nav-item"><span class="icon">◫</span> Orders</div>
+            <div class="nav-item"><span class="icon">?</span> Enquiry</div>
+            <div class="nav-item"><span class="icon">◌</span> Marketing</div>
+            <div class="nav-item"><span class="icon">⚙</span> Setting</div>
+            <div class="nav-spacer"></div>
+            <div class="nav-item"><span class="icon">◉</span> User</div>
+            <div class="nav-item"><span class="icon">⇠</span> Logout</div>
+          </nav>
+        </aside>
+
+        <main class="main">
+          <header class="topbar">
+            <div class="user-wrap">
+              <div class="avatar"></div>
+              <div class="welcome">
+                <span>Hi, Home!</span>
+                <strong>Welcome Back!</strong>
+              </div>
+            </div>
+
+            <div class="search-area">
+              <input id="searchInput" class="search" type="text" placeholder="Search" />
+              <div class="tool-icons">
+                <span>⌕</span>
+                <span>◫</span>
+                <span>🛒</span>
+              </div>
+            </div>
+          </header>
+
+          <section id="statsRow" class="summary-row"></section>
+
+          <section class="content-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Sales Overtime</div>
+                <div class="filter-tabs">
+                  <span class="chip active">Revenue</span>
+                  <span class="chip">Order</span>
+                </div>
+              </div>
+
+              <div class="chart-box">
+                <svg viewBox="0 0 620 180" aria-label="Sales chart">
+                  <path d="M0 130 L70 110 L150 118 L220 98 L290 76 L370 82 L455 64 L540 90 L620 70" fill="none" stroke="#5bb9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+
+              <div class="axis-labels">
+                <span>Jun</span>
+                <span>Jul</span>
+                <span>Aug</span>
+                <span>Sep</span>
+                <span>Oct</span>
+                <span>Nov</span>
+                <span>Dec</span>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">Top Selling Product</div>
+                <div class="filter-tabs">
+                  <span class="chip">See All Product</span>
+                </div>
+              </div>
+              <div id="topProducts" class="product-list"></div>
+            </div>
+          </section>
+
+          <section class="list-row">
+            <div class="order-panel">
+              <div class="order-header">
+                <div class="panel-title">Order Stats</div>
+                <div class="order-badge">25+ Orders Ready to be Shipped</div>
+              </div>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+
+            <div class="donut-panel">
+              <div class="panel-title">Sales by Category</div>
+              <div class="donut-wrap">
+                <div class="donut">
+                  <div class="donut-inner">22%</div>
+                </div>
+              </div>
+              <div id="categoryLegend" class="legend"></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const statsRow = document.getElementById('statsRow');
+      const topProductsEl = document.getElementById('topProducts');
+      const ordersTableEl = document.getElementById('ordersTable');
+      const categoryLegendEl = document.getElementById('categoryLegend');
+
+      function getFirstPriceNumber(value) {
+        if (!value) return 0;
+        const text = String(value).trim();
+        const parts = text.split(/[_;|/]+/).flatMap(part => part.split(/\s+/)).filter(Boolean);
+        const numbers = parts.flatMap(part => (part.match(/\d+/g) || []).map(Number));
+        return numbers.length ? numbers[0] : 0;
+      }
+
+      function formatMoney(value) {
+        const number = Number(value || 0);
+        return new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+          maximumFractionDigits: 0,
+        }).format(number);
+      }
+
+      function getImageUrl(paths) {
+        if (!Array.isArray(paths) || !paths.length) {
+          return 'https://placehold.co/80x80/edf4ff/0a7cff?text=No+Image';
+        }
+
+        const first = paths[0];
+        if (/^data:image\//i.test(first)) return first;
+        if (/^https?:\/\//i.test(first)) return first;
+        if (first.startsWith('data/')) return `../${first}`;
+        return first;
+      }
+
+      function buildStats(products) {
+        const totalProducts = products.length;
+        const totalOrder = Math.max(32, totalProducts);
+        const balance = products.reduce((sum, item) => sum + getFirstPriceNumber(item.price), 0);
+        const growth = 50;
+
+        return [
+          { label: 'Total Customer', value: `${(totalProducts * 8 + 120).toLocaleString('vi-VN')}`, icon: '👥', color: '#ff6bbf' },
+          { label: 'Total Order', value: `${totalOrder.toLocaleString('vi-VN')}`, icon: '🛍️', color: '#f3448a' },
+          { label: 'Total Balance', value: formatMoney(balance), icon: '$', color: '#ff5a5a' },
+          { label: 'Earn Growth', value: `${growth}%`, icon: '↗', color: '#5ebef8' }
+        ];
+      }
+
+      function renderStats(products) {
+        const stats = buildStats(products);
+        statsRow.innerHTML = stats.map(item => `
+          <div class="stat-card">
+            <div class="stat-inner">
+              <div class="badge-icon" style="background: linear-gradient(135deg, ${item.color}, #ff7bb9);">${item.icon}</div>
+              <div class="stat-text">
+                <span class="stat-label">${item.label}</span>
+                <span class="stat-value">${item.value}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderTopProducts(products) {
+        const top = products.slice(0, 3).map((item, index) => ({
+          name: item.product_name || 'New Product',
+          category: item.category || 'Cosmetics',
+          price: getFirstPriceNumber(item.price),
+          image: getImageUrl(item.image_paths),
+          qty: 110 - index * 18,
+        }));
+
+        topProductsEl.innerHTML = top.map(item => `
+          <div class="product-item">
+            <div class="thumb"><img src="${item.image}" alt="${item.name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/edf4ff/0a7cff?text=No+Image';" /></div>
+            <div class="product-info">
+              <div class="product-name">${item.name}</div>
+              <div class="product-meta">${item.qty} items</div>
+            </div>
+            <div class="product-price">${formatMoney(item.price)}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderOrders(products) {
+        const rows = products.slice(0, 5).map((item, index) => ({
+          name: item.product_name || 'Product',
+          total: index + 1,
+          status: index % 2 === 0 ? 'Paid' : 'Not yet paid',
+          date: '01/01/2025',
+          time: '15:30',
+          image: getImageUrl(item.image_paths),
+        }));
+
+        ordersTableEl.innerHTML = rows.map((row) => `
+          <tr>
+            <td>
+              <div class="product-mini">
+                <div class="mini-thumb"><img src="${row.image}" alt="${row.name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/edf4ff/0a7cff?text=No+Image';" /></div>
+                <span>${row.name}</span>
+              </div>
+            </td>
+            <td>${row.total}x</td>
+            <td><span class="status-pill ${row.status === 'Paid' ? 'status-paid' : 'status-pending'}">${row.status}</span></td>
+            <td>${row.date}</td>
+            <td>${row.time}</td>
+          </tr>
+        `).join('');
+      }
+
+      function renderCategoryLegend(products) {
+        const categories = products.reduce((map, item) => {
+          const key = item.category || 'Other';
+          map[key] = (map[key] || 0) + 1;
+          return map;
+        }, {});
+
+        const palette = ['#ff73ba', '#f5b7d5', '#8dc8f8', '#85e6bc', '#fbc759', '#9f7aea'];
+        const entries = Object.entries(categories).slice(0, 6);
+
+        categoryLegendEl.innerHTML = entries.map(([label, count], index) => `
+          <div class="legend-item">
+            <span class="dot" style="background:${palette[index % palette.length]};"></span>
+            <span>${label}</span>
+          </div>
+        `).join('');
+      }
+
+      function renderDashboard() {
+        fetch('../data/products_clean.json')
+          .then((response) => response.json())
+          .then((products) => {
+            const list = Array.isArray(products) ? products : [];
+            renderStats(list);
+            renderTopProducts(list);
+            renderOrders(list);
+            renderCategoryLegend(list);
+          })
+          .catch(() => {
+            const empty = [];
+            renderStats(empty);
+            topProductsEl.innerHTML = '<div class="empty">Không thể tải dữ liệu.</div>';
+            ordersTableEl.innerHTML = '';
+            categoryLegendEl.innerHTML = '';
+          });
+      }
+
+      document.getElementById('searchInput').addEventListener('input', function () {
+        const keyword = this.value.trim().toLowerCase();
+        fetch('../data/products_clean.json')
+          .then((response) => response.json())
+          .then((products) => {
+            const result = Array.isArray(products) ? products.filter((item) => {
+              const text = [item.product_name, item.category, item.brand, item.skin_type].join(' ').toLowerCase();
+              return !keyword || text.includes(keyword);
+            }) : [];
+
+            renderTopProducts(result.length ? result : products || []);
+            renderOrders(result.length ? result : products || []);
+            renderStats(result.length ? result : products || []);
+          });
+      });
+
+      renderDashboard();
+    </script>
+  </body>
+</html>

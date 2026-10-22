@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh sách sản phẩm</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --panel: #ffffff;
+        --card: #ffffff;
+        --primary: #0a7cff;
+        --primary-soft: #eaf3ff;
+        --muted: #667085;
+        --text: #1f2937;
+        --line: #e5e7eb;
+        --danger: #dc2626;
+        --danger-soft: #fee2e2;
+        --success: #15803d;
+        --success-soft: #dcfce7;
+        --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(180deg, #f8faff 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 42px);
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .link-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4338ca;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 16px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .btn {
+        border: none;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 11px 16px;
+        font-weight: 700;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #eef2ff;
+        color: #4338ca;
+      }
+
+      .btn-danger {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .search-box {
+        flex: 1 1 420px;
+        position: relative;
+      }
+
+      .search-box input,
+      .filter-box select {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 15px;
+        color: var(--text);
+        outline: none;
+        box-shadow: 0 2px 10px rgba(10, 124, 255, 0.04);
+      }
+
+      .search-box input:focus,
+      .filter-box select:focus,
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: rgba(10, 124, 255, 0.5);
+        box-shadow: 0 0 0 4px rgba(10, 124, 255, 0.08);
+      }
+
+      .filter-box {
+        min-width: 220px;
+      }
+
+      .status-banner {
+        margin: 14px 0 18px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        border: 1px solid rgba(10, 124, 255, 0.12);
+      }
+
+      .summary {
+        margin: 10px 0 20px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 32px rgba(15, 23, 42, 0.12);
+      }
+
+      .image-wrap {
+        position: relative;
+        height: 220px;
+        background: linear-gradient(135deg, #edf4ff 0%, #eefbf6 100%);
+      }
+
+      .image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .card-body {
+        padding: 16px 16px 18px;
+      }
+
+      .badge {
+        display: inline-block;
+        background: var(--primary-soft);
+        color: var(--primary);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        line-height: 1.3;
+      }
+
+      .meta {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .price {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 12px 0 10px;
+      }
+
+      .variant-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .variant-btn {
+        border: 1px solid var(--line);
+        background: #f8fafc;
+        color: var(--text);
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .variant-btn.active {
+        background: var(--primary-soft);
+        border-color: rgba(10, 124, 255, 0.2);
+        color: var(--primary);
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-block;
+        background: #f3f4f6;
+        color: #374151;
+        border-radius: 999px;
+        padding: 6px 8px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .mini-btn {
+        flex: 1;
+        border: 0;
+        border-radius: 10px;
+        padding: 9px 10px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .mini-btn.edit {
+        background: #edf4ff;
+        color: var(--primary);
+      }
+
+      .mini-btn.delete {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+
+      .empty {
+        width: 100%;
+        background: var(--panel);
+        border: 1px dashed var(--line);
+        border-radius: 16px;
+        padding: 40px 18px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 20;
+      }
+
+      .modal.hidden {
+        display: none;
+      }
+
+      .modal-card {
+        width: min(760px, 100%);
+        max-height: 90vh;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.2);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .close-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        background: #f3f4f6;
+        color: var(--text);
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .form-wrap {
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      .field label {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 12px;
+        padding: 11px 12px;
+        resize: vertical;
+        min-height: 44px;
+      }
+
+      .field textarea {
+        min-height: 110px;
+      }
+
+      .modal-actions {
+        position: sticky;
+        bottom: 0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 14px;
+        background: white;
+        border-top: 1px solid var(--line);
+      }
+
+      @media (max-width: 720px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <h1>Sản phẩm mỹ phẩm</h1>
+        <div class="topbar-actions">          <a href="admin.html" class="link-btn">Trang quản trị</a>          <button id="addProductBtn" class="btn btn-primary" type="button">+ Thêm sản phẩm</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <input id="searchInput" type="text" placeholder="Tìm kiếm theo tên, thương hiệu, loại da..." />
+        </div>
+        <div class="filter-box">
+          <select id="categoryFilter">
+            <option value="all">Tất cả danh mục</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="statusBanner" class="status-banner">Đang tải dữ liệu từ file Excel đã chuẩn hóa...</div>
+      <div id="summary" class="summary">Đang tải dữ liệu...</div>
+      <div id="productGrid" class="product-grid"></div>
+    </div>
+
+    <div id="productModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="modalTitle">Thêm sản phẩm</h2>
+          <button id="closeModalBtn" class="close-btn" type="button" aria-label="Đóng">×</button>
+        </div>
+
+        <form id="productForm" class="form-wrap">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="product_name">Tên sản phẩm</label>
+              <input id="product_name" name="product_name" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="category">Danh mục</label>
+              <input id="category" name="category" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="brand">Thương hiệu</label>
+              <input id="brand" name="brand" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="price">Giá bán</label>
+              <input id="price" name="price" type="text" placeholder="245.000₫ hoặc 245000" />
+            </div>
+
+            <div class="field">
+              <label for="capacity">Dung tích</label>
+              <input id="capacity" name="capacity" type="text" placeholder="100ml_250ml_500ml" />
+            </div>
+
+            <div class="field">
+              <label for="unit">Đơn vị</label>
+              <input id="unit" name="unit" type="text" value="ml" />
+            </div>
+
+            <div class="field">
+              <label for="skin_type">Loại da</label>
+              <input id="skin_type" name="skin_type" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="origin">Xuất xứ</label>
+              <input id="origin" name="origin" type="text" />
+            </div>
+
+            <div class="field">
+              <label for="expiry">Hạn sử dụng</label>
+              <input id="expiry" name="expiry" type="text" />
+            </div>
+
+            <div class="field full">
+              <label for="usage">Công dụng</label>
+              <textarea id="usage" name="usage" placeholder="Mô tả ngắn về công dụng sản phẩm..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label for="ingredients">Thành phần</label>
+              <textarea id="ingredients" name="ingredients" placeholder="Ghi thành phần hoặc mô tả chi tiết..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label for="product_images">Tải ảnh từ máy tính</label>
+              <input id="product_images" type="file" accept="image/*" multiple />
+            </div>
+
+            <div class="field full">
+              <label for="image_paths">Đường dẫn ảnh / URL ảnh (mỗi dòng 1 ảnh hoặc ngăn cách bằng dấu phẩy)</label>
+              <textarea id="image_paths" name="image_paths" placeholder="data/Hình ảnh mỹ phẩm/example.jpg&#10;https://example.com/image.jpg&#10;Hoặc để trống nếu vừa upload ảnh từ máy tính"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+            <button id="saveProductBtn" type="submit" class="btn btn-primary">Lưu sản phẩm</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const productGrid = document.getElementById('productGrid');
+      const summary = document.getElementById('summary');
+      const statusBanner = document.getElementById('statusBanner');
+      const addProductBtn = document.getElementById('addProductBtn');
+      const productModal = document.getElementById('productModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const productForm = document.getElementById('productForm');
+      const productImagesInput = document.getElementById('product_images');
+      const STORAGE_KEY = 'cosmetics_products_local_v1';
+      let products = [];
+      let editingIndex = null;
+
+      function normalizeImagePaths(value) {
+        if (!value) return [];
+        return String(value)
+          .split(/[\r\n,]+/)
+          .map(item => item.trim())
+          .filter(Boolean);
+      }
+
+      function readLocalImageFiles(files) {
+        const selected = Array.from(files || []);
+        if (!selected.length) return Promise.resolve([]);
+
+        const promises = selected.map(file => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(new Error('Không đọc được ảnh'));
+          reader.readAsDataURL(file);
+        }));
+
+        return Promise.all(promises);
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function saveLocalProducts() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+        const data = JSON.stringify(products, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'products_clean.json';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        return Promise.resolve();
+      }
+
+      function getFirstImage(paths) {
+        if (!Array.isArray(paths) || !paths.length) {
+          return 'https://placehold.co/600x420/edf4ff/0a7cff?text=No+Image';
+        }
+
+        const raw = paths[0];
+        if (!raw) return 'https://placehold.co/600x420/edf4ff/0a7cff?text=No+Image';
+        if (/^data:image\//i.test(raw)) return raw;
+        if (/^https?:\/\//i.test(raw)) return raw;
+        if (raw.startsWith('data/')) return `../${raw}`;
+        return raw;
+      }
+
+      function splitByVariants(value) {
+        if (value === null || value === undefined) return [];
+        const text = String(value).replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!text) return [];
+        return text
+          .split(/[_;|/]+/)
+          .map(item => item.trim())
+          .filter(Boolean);
+      }
+
+      function buildCapacityPricePairs(product) {
+        const capacities = splitByVariants(product.capacity);
+        const prices = splitByVariants(product.price).map(item => item.replace(/^(?:₫|đ|VND)\s*/i, '').trim());
+
+        const fallbackCapacity = product.capacity ? String(product.capacity).trim() : 'Mặc định';
+        const fallbackPrice = product.price ? String(product.price).trim() : 'Liên hệ';
+
+        const maxCount = Math.max(capacities.length || 1, prices.length || 1);
+        const pairs = [];
+
+        for (let index = 0; index < maxCount; index += 1) {
+          const capacity = capacities[index] || (capacities.length === 1 ? capacities[0] : fallbackCapacity);
+          const priceText = prices[index] || (prices.length === 1 ? prices[0] : fallbackPrice);
+          if (!capacity && !priceText) continue;
+          pairs.push({ capacity: capacity || 'Mặc định', price: priceText || 'Liên hệ' });
+        }
+
+        if (!pairs.length) {
+          pairs.push({ capacity: fallbackCapacity, price: fallbackPrice });
+        }
+
+        return pairs;
+      }
+
+      function formatPrice(value) {
+        if (!value) return 'Liên hệ';
+
+        const text = String(value).replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        const matches = text.match(/\d[\d\.,\s]*\d/g) || [];
+        const numbers = [...new Set(matches.map(item => Number(item.replace(/[^\d]/g, ''))))]
+          .filter(item => Number.isFinite(item) && item > 0)
+          .sort((a, b) => a - b);
+
+        if (numbers.length === 0) return text || 'Liên hệ';
+        if (numbers.length === 1) return `${numbers[0].toLocaleString('vi-VN')}₫`;
+        return `${numbers[0].toLocaleString('vi-VN')}₫ - ${numbers[numbers.length - 1].toLocaleString('vi-VN')}₫`;
+      }
+
+      function summarizeUsage(value, maxLength = 120) {
+        const text = String(value ?? '').trim();
+        if (!text) {
+          return 'Làm sạch, dưỡng ẩm và hỗ trợ cải thiện tình trạng da hàng ngày theo nhu cầu của từng loại da.';
+        }
+        return text.length > maxLength ? `${text.slice(0, maxLength).trim()}...` : text;
+      }
+
+      function renderCategories() {
+        const categories = [...new Set(products
+          .map(p => p.category)
+          .filter(Boolean))].sort();
+
+        categoryFilter.innerHTML = '<option value="all">Tất cả danh mục</option>' +
+          categories.map(category => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join('');
+      }
+
+      function openModal(product = null, index = null) {
+        editingIndex = index;
+        modalTitle.textContent = product ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm';
+        productForm.reset();
+        productImagesInput.value = '';
+
+        if (product) {
+          document.getElementById('product_name').value = product.product_name || '';
+          document.getElementById('category').value = product.category || '';
+          document.getElementById('brand').value = product.brand || '';
+          document.getElementById('price').value = product.price || '';
+          document.getElementById('capacity').value = product.capacity || '';
+          document.getElementById('unit').value = product.unit || 'ml';
+          document.getElementById('skin_type').value = product.skin_type || '';
+          document.getElementById('origin').value = product.origin || '';
+          document.getElementById('expiry').value = product.expiry || '';
+          document.getElementById('usage').value = product.usage || '';
+          document.getElementById('ingredients').value = product.ingredients || '';
+          document.getElementById('image_paths').value = Array.isArray(product.image_paths) ? product.image_paths.join('\n') : '';
+        }
+
+        productModal.classList.remove('hidden');
+        productModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeModal() {
+        editingIndex = null;
+        productModal.classList.add('hidden');
+        productModal.setAttribute('aria-hidden', 'true');
+        productForm.reset();
+      }
+
+      function renderProducts() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const selectedCategory = categoryFilter.value;
+
+        const filtered = products.filter((p) => {
+          const combinedText = [
+            p.product_name,
+            p.brand,
+            p.category,
+            p.skin_type,
+            p.origin,
+            p.capacity,
+            p.ingredients,
+            p.usage
+          ].join(' ').toLowerCase();
+
+          const matchText = !keyword || combinedText.includes(keyword);
+          const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
+          return matchText && matchCategory;
+        });
+
+        summary.textContent = `Hiển thị ${filtered.length}/${products.length} sản phẩm`;
+
+        if (!filtered.length) {
+          productGrid.innerHTML = '<div class="empty">Không tìm thấy sản phẩm phù hợp.</div>';
+          return;
+        }
+
+        productGrid.innerHTML = filtered.map((product, visibleIndex) => {
+          const originalIndex = products.findIndex(item => item === product);
+          const image = getFirstImage(product.image_paths);
+          const categories = [product.category, product.skin_type, product.origin].filter(Boolean).slice(0, 3);
+          const pairList = buildCapacityPricePairs(product);
+          const selectedCapacity = product.selected_capacity || pairList[0]?.capacity || 'Mặc định';
+          const selectedPrice = pairList.find(pair => pair.capacity === selectedCapacity)?.price || pairList[0]?.price || product.price || 'Liên hệ';
+
+          return `
+            <article class="card" data-index="${originalIndex}">
+              <div class="image-wrap">
+                <img src="${image}" alt="${escapeHtml(product.product_name || 'Sản phẩm')}" onerror="this.onerror=null;this.src='https://placehold.co/600x420/edf4ff/0a7cff?text=No+Image';" />
+              </div>
+              <div class="card-body">
+                <span class="badge">${escapeHtml(product.category || 'Khác')}</span>
+                <h3>${escapeHtml(product.product_name || 'Sản phẩm')}</h3>
+                <div class="meta"><strong>Thương hiệu:</strong> ${escapeHtml(product.brand || '—')}</div>
+                <div class="meta"><strong>Loại da:</strong> ${escapeHtml(product.skin_type || '—')}</div>
+                <div class="meta"><strong>Công dụng:</strong> ${escapeHtml(summarizeUsage(product.usage))}</div>
+                <div class="price">${escapeHtml(formatPrice(selectedPrice))}</div>
+
+                <div class="variant-group">
+                  ${pairList.map(pair => `
+                    <button
+                      class="variant-btn ${pair.capacity === selectedCapacity ? 'active' : ''}"
+                      type="button"
+                      data-product-index="${originalIndex}"
+                      data-capacity="${escapeHtml(pair.capacity)}"
+                    >${escapeHtml(pair.capacity)}</button>
+                  `).join('')}
+                </div>
+
+                <div class="tags">
+                  ${categories.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                </div>
+
+                <div class="card-actions">
+                  <button class="mini-btn edit" type="button" data-action="edit" data-index="${originalIndex}">Sửa</button>
+                  <button class="mini-btn delete" type="button" data-action="delete" data-index="${originalIndex}">Xóa</button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      productImagesInput.addEventListener('change', async (event) => {
+        const files = event.target.files;
+        if (!files || !files.length) return;
+
+        try {
+          const uploadedImages = await readLocalImageFiles(files);
+          const existingPaths = normalizeImagePaths(document.getElementById('image_paths').value);
+          const mergedPaths = [...existingPaths, ...uploadedImages.filter(Boolean)];
+          document.getElementById('image_paths').value = mergedPaths.join('\n');
+          statusBanner.textContent = `Đã thêm ${uploadedImages.length} ảnh từ máy tính vào sản phẩm.`;
+        } catch (error) {
+          statusBanner.textContent = 'Không thể đọc ảnh từ máy tính. Vui lòng thử lại.';
+        }
+      });
+
+      productForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(productForm);
+        const rawImagePaths = normalizeImagePaths(formData.get('image_paths'));
+        const uploadedFiles = productImagesInput.files ? Array.from(productImagesInput.files) : [];
+
+        let imagePaths = [...rawImagePaths];
+        if (uploadedFiles.length) {
+          try {
+            const uploadedImages = await readLocalImageFiles(uploadedFiles);
+            imagePaths = [...imagePaths, ...uploadedImages.filter(Boolean)];
+          } catch (error) {
+            alert('Có lỗi khi đọc ảnh đã chọn. Vui lòng thử lại.');
+            return;
+          }
+        }
+
+        const nextProduct = {
+          product_name: String(formData.get('product_name') || '').trim(),
+          category: String(formData.get('category') || '').trim(),
+          brand: String(formData.get('brand') || '').trim(),
+          price: String(formData.get('price') || '').trim(),
+          capacity: String(formData.get('capacity') || '').trim(),
+          unit: String(formData.get('unit') || '').trim(),
+          skin_type: String(formData.get('skin_type') || '').trim(),
+          origin: String(formData.get('origin') || '').trim(),
+          expiry: String(formData.get('expiry') || '').trim(),
+          usage: String(formData.get('usage') || '').trim(),
+          ingredients: String(formData.get('ingredients') || '').trim(),
+          image_paths: imagePaths,
+          image_count: imagePaths.length,
+        };
+
+        if (!nextProduct.product_name || !nextProduct.category || !nextProduct.brand) {
+          alert('Vui lòng nhập tên sản phẩm, danh mục và thương hiệu.');
+          return;
+        }
+
+        if (editingIndex === null) {
+          products.push(nextProduct);
+        } else {
+          products[editingIndex] = nextProduct;
+        }
+
+        await saveLocalProducts();
+        renderCategories();
+        renderProducts();
+        closeModal();
+        statusBanner.textContent = 'Đã lưu thông tin sản phẩm vào file JSON.';
+      });
+
+      productGrid.addEventListener('click', (event) => {
+        const variantBtn = event.target.closest('.variant-btn');
+        if (variantBtn) {
+          const index = Number(variantBtn.dataset.productIndex);
+          if (Number.isNaN(index) || !products[index]) return;
+          products[index].selected_capacity = variantBtn.dataset.capacity;
+          renderProducts();
+          return;
+        }
+
+        const target = event.target.closest('[data-action]');
+        if (!target) return;
+
+        const index = Number(target.dataset.index);
+        if (Number.isNaN(index)) return;
+
+        if (target.dataset.action === 'edit') {
+          openModal(products[index], index);
+          return;
+        }
+
+        if (target.dataset.action === 'delete') {
+          const product = products[index];
+          if (!product) return;
+
+          const confirmDelete = window.confirm(`Bạn có chắc muốn xóa sản phẩm "${product.product_name}" không?`);
+          if (!confirmDelete) return;
+
+          products.splice(index, 1);
+          saveLocalProducts();
+          renderCategories();
+          renderProducts();
+          statusBanner.textContent = `Đã xóa sản phẩm: ${product.product_name} và lưu file JSON.`;
+        }
+      });
+
+      addProductBtn.addEventListener('click', () => openModal());
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      searchInput.addEventListener('input', renderProducts);
+      categoryFilter.addEventListener('change', renderProducts);
+
+      productModal.addEventListener('click', (event) => {
+        if (event.target === productModal) {
+          closeModal();
+        }
+      });
+
+      function loadProducts() {
+        const localData = localStorage.getItem(STORAGE_KEY);
+
+        fetch('../data/products_clean.json')
+          .then(response => {
+            if (!response.ok) throw new Error('Không load được dữ liệu');
+            return response.json();
+          })
+          .then(data => {
+            const baseProducts = Array.isArray(data) ? data : [];
+            const savedProducts = localData ? JSON.parse(localData) : [];
+            const baseMap = new Map(baseProducts.map((product) => [String(product.product_name || '').trim().toLowerCase(), product]));
+            const genericUsage = 'Làm sạch, dưỡng ẩm và hỗ trợ cải thiện tình trạng da hàng ngày theo nhu cầu của từng loại da.';
+
+            const mergedProducts = baseProducts.map((baseProduct) => {
+              const key = String(baseProduct.product_name || '').trim().toLowerCase();
+              const savedProduct = savedProducts.find((item) => String(item.product_name || '').trim().toLowerCase() === key) || null;
+              const usageValue = String(baseProduct.usage || savedProduct?.usage || '').trim();
+              const capacityPairs = buildCapacityPricePairs(baseProduct);
+              const selectedCapacity = savedProduct?.selected_capacity || capacityPairs[0]?.capacity || 'Mặc định';
+
+              return {
+                ...baseProduct,
+                ...(savedProduct || {}),
+                usage: usageValue || genericUsage,
+                selected_capacity: selectedCapacity,
+              };
+            });
+
+            products = mergedProducts;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedProducts));
+
+            if (Array.isArray(savedProducts) && savedProducts.length) {
+              statusBanner.textContent = 'Đang hiển thị dữ liệu chính thức từ file JSON với công dụng từng sản phẩm.';
+            } else {
+              statusBanner.textContent = 'Đang hiển thị dữ liệu từ file Excel đã chuẩn hóa...';
+            }
+
+            renderCategories();
+            renderProducts();
+          })
+          .catch(() => {
+            productGrid.innerHTML = '<div class="empty">Không thể tải dữ liệu sản phẩm. Vui lòng kiểm tra file JSON.</div>';
+            summary.textContent = 'Có lỗi khi tải dữ liệu';
+          });
+      }
+
+      loadProducts();
+    </script>
+  </body>
+</html>

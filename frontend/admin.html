@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <style>
+      :root {
+        --pink-bg: #f8d0df;
+        --panel-bg: #f2f3f5;
+        --component: rgba(255,255,255,0.75);
+        --header: #f7f5f5;
+        --sidebar: #f6f4f4;
+        --text: #1a1a1c;
+        --muted: #7c7a80;
+        --line: #ece8ea;
+        --pink: #ff4e9b;
+        --pink-strong: #f8338d;
+        --pink-soft: #ffe8f3;
+        --blue: #5aa9ff;
+        --green: #57c39a;
+        --yellow: #f6be46;
+        --shadow: 0 18px 32px rgba(43, 32, 38, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--pink-bg);
+        color: var(--text);
+      }
+
+      button, input {
+        font: inherit;
+      }
+
+      .page-shell {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+      }
+
+      .app-window {
+        width: min(1280px, 100%);
+        background: rgba(255,255,255,0.24);
+        border-radius: 28px;
+        padding: 18px;
+        box-shadow: 0 10px 25px rgba(255, 87, 157, 0.08);
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(0,0,0,0.04);
+      }
+
+      .sidebar {
+        background: var(--sidebar);
+        padding: 20px 16px 14px;
+        border-right: 1px solid var(--line);
+      }
+
+      .brand {
+        font-size: 42px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        margin: 0 0 20px;
+        padding-left: 10px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: #373640;
+        font-size: 15px;
+        font-weight: 600;
+        user-select: none;
+      }
+
+      .nav-item.active {
+        background: linear-gradient(90deg, #ff4f9c, #ff7baf);
+        color: white;
+        box-shadow: 0 12px 18px rgba(255, 103, 170, 0.20);
+      }
+
+      .nav-icon {
+        width: 14px;
+        display: inline-block;
+        text-align: center;
+        font-size: 15px;
+      }
+
+      .nav-spacer {
+        height: 12px;
+      }
+
+      .main {
+        background: var(--panel-bg);
+        padding: 16px 18px 18px;
+      }
+
+      .topbar {
+        background: rgba(255,255,255,0.66);
+        border: 1px solid rgba(155, 155, 160, 0.22);
+        border-radius: 18px;
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        gap: 18px;
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #edc0b8, #d7a98b);
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .avatar::before {
+        content: "";
+        position: absolute;
+        left: 12px;
+        top: 8px;
+        width: 18px;
+        height: 18px;
+        background: #4a312c;
+        border-radius: 50%;
+      }
+
+      .avatar::after {
+        content: "";
+        position: absolute;
+        left: 7px;
+        bottom: 5px;
+        width: 28px;
+        height: 18px;
+        background: #f6d9ba;
+        border-radius: 14px 14px 12px 12px;
+      }
+
+      .profile-text {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.1;
+      }
+
+      .profile-text strong {
+        display: block;
+        font-size: 18px;
+        color: var(--text);
+        margin-top: 2px;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        justify-content: flex-end;
+      }
+
+      .search-box {
+        width: min(440px, 50vw);
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        gap: 8px;
+      }
+
+      .search-box input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        color: var(--text);
+        font-size: 15px;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.7);
+        display: grid;
+        place-items: center;
+        font-size: 17px;
+        color: #343541;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .stat-card {
+        background: rgba(255,255,255,0.75);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px 16px 16px;
+        box-shadow: 0 10px 22px rgba(20,20,35,0.02);
+      }
+
+      .stat-icon-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+
+      .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 27px;
+        background: var(--pink-soft);
+        color: var(--pink-strong);
+      }
+
+      .stat-card:nth-child(2) .stat-icon { background: #f7e7ea; color: #ff4e9b; }
+      .stat-card:nth-child(3) .stat-icon { background: #eff8ff; color: #2ca4ff; }
+      .stat-card:nth-child(4) .stat-icon { background: #eafaf3; color: #2fbb79; }
+
+      .stat-label {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        text-align: center;
+        font-weight: 800;
+        font-size: clamp(20px, 2vw, 30px);
+        letter-spacing: -0.6px;
+      }
+
+      .content-row {
+        display: grid;
+        grid-template-columns: 1.75fr 1fr;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .panel {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px 18px 12px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 12px;
+      }
+
+      .panel-title {
+        font-weight: 800;
+        font-size: 18px;
+      }
+
+      .segmented {
+        display: inline-flex;
+        background: #f3f3f3;
+        border-radius: 10px;
+        padding: 3px;
+        border: 1px solid var(--line);
+      }
+
+      .segmented button {
+        border: none;
+        background: transparent;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .segmented button.active {
+        background: white;
+        color: var(--text);
+      }
+
+      .sales-chart {
+        height: 200px;
+        position: relative;
+        padding-top: 8px;
+      }
+
+      .sales-chart svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .chart-grid line {
+        stroke: rgba(116,122,133,0.14);
+        stroke-width: 1;
+      }
+
+      .chart-line {
+        fill: none;
+        stroke: #4aa7ff;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .chart-labels {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 12px 0 14px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .top-products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .top-product-item {
+        display: grid;
+        grid-template-columns: 38px 1fr auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 6px;
+        border-radius: 12px;
+      }
+
+      .top-product-item img {
+        width: 38px;
+        height: 38px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .product-name {
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .product-price {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .stock-pill {
+        background: #eafcef;
+        color: #1b9b69;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .bottom-row {
+        display: grid;
+        grid-template-columns: 1.75fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .orders-panel {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px 18px 12px;
+      }
+
+      .orders-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .orders-head h3 {
+        font-weight: 800;
+        font-size: 17px;
+        margin: 0;
+      }
+
+      .orders-head h3 span {
+        color: var(--pink-strong);
+      }
+
+      .sort-box {
+        border: 1px solid var(--line);
+        background: #f5f5f6;
+        border-radius: 10px;
+        padding: 7px 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      table.order-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .order-table th,
+      .order-table td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 10px;
+        text-align: left;
+      }
+
+      .order-table th {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .product-mini {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .product-mini img {
+        width: 32px;
+        height: 32px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .status-paid, .status-pending {
+        display: inline-block;
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .status-paid {
+        background: #eafaf3;
+        color: #0b9f68;
+      }
+
+      .status-pending {
+        background: #fff3d9;
+        color: #d17d00;
+      }
+
+      .donut-card {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 16px 14px;
+      }
+
+      .donut-card h3 {
+        margin: 0 0 14px;
+        font-size: 20px;
+      }
+
+      .donut-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 12px 0 14px;
+      }
+
+      .donut {
+        position: relative;
+        width: 172px;
+        height: 172px;
+        border-radius: 50%;
+        background: conic-gradient(
+          #f7a8c6 0 22%,
+          #efc0d8 22% 40%,
+          #b9d8ff 40% 63%,
+          #bfead8 63% 89%,
+          #f1d8a8 89% 100%
+        );
+      }
+
+      .donut::after {
+        content: "22%";
+        position: absolute;
+        inset: 35px;
+        background: white;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 18px;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(80px, 1fr));
+        gap: 8px 12px;
+        padding: 0 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      @media (max-width: 980px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .stats,
+        .content-row,
+        .bottom-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="app-window">
+        <div class="dashboard">
+          <aside class="sidebar">
+            <div class="brand">Logo</div>
+            <nav class="nav">
+              <a class="nav-item active" href="admin.html"><span class="nav-icon">◔</span> Dashboard</a>
+              <a class="nav-item" href="analytics.html"><span class="nav-icon">◉</span> Analytics</a>
+              <a class="nav-item" href="products.html"><span class="nav-icon">◫</span> Products</a>
+              <a class="nav-item" href="payment.html"><span class="nav-icon">◍</span> Payment</a>
+              <a class="nav-item" href="orders.html"><span class="nav-icon">◌</span> Orders</a>
+              <a class="nav-item" href="enquiry.html"><span class="nav-icon">⌕</span> Enquiry</a>
+              <a class="nav-item" href="marketing.html"><span class="nav-icon">◈</span> Marketing</a>
+              <a class="nav-item" href="setting.html"><span class="nav-icon">⚙</span> Setting</a>
+              <a class="nav-item" href="user.html"><span class="nav-icon">◔</span> User</a>
+              <div class="nav-spacer"></div>
+              <a class="nav-item" href="logout.html"><span class="nav-icon">⎋</span> Logout</a>
+            </nav>
+          </aside>
+
+          <main class="main">
+            <header class="topbar">
+              <div class="profile">
+                <div class="avatar"></div>
+                <div class="profile-text">Hi, Homesh!<strong>Welcome Back!</strong></div>
+              </div>
+
+              <div class="top-actions">
+                <div class="search-box">
+                  <span>⌕</span>
+                  <input id="searchInput" type="text" placeholder="Search" />
+                </div>
+                <div class="icon-btn">◌</div>
+                <div class="icon-btn">🛒</div>
+              </div>
+            </header>
+
+            <section class="stats" id="statsGrid"></section>
+
+            <section class="content-row">
+              <article class="panel">
+                <div class="panel-head">
+                  <div class="panel-title">Sales Overtime</div>
+                  <div class="segmented">
+                    <button class="active" type="button">Revenue</button>
+                    <button type="button">Order</button>
+                  </div>
+                </div>
+
+                <div class="sales-chart">
+                  <svg viewBox="0 0 620 200" preserveAspectRatio="none" aria-label="sales chart">
+                    <g class="chart-grid">
+                      <line x1="0" y1="10" x2="620" y2="10" />
+                      <line x1="0" y1="52" x2="620" y2="52" />
+                      <line x1="0" y1="94" x2="620" y2="94" />
+                      <line x1="0" y1="136" x2="620" y2="136" />
+                      <line x1="0" y1="178" x2="620" y2="178" />
+                    </g>
+                    <path class="chart-line" d="M0,120 C50,110 90,100 120,80 S200,60 250,90 S320,110 380,70 S470,30 520,90 S570,80 620,95" />
+                  </svg>
+                </div>
+
+                <div class="chart-labels">
+                  <span>Jun</span>
+                  <span>Jul</span>
+                  <span>Aug</span>
+                  <span>Sep</span>
+                  <span>Oct</span>
+                  <span>Nov</span>
+                  <span>Dec</span>
+                </div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-head">
+                  <div class="panel-title">Top Selling Product</div>
+                  <button class="sort-box" type="button" style="padding:8px 12px; border:none; background:transparent; cursor:pointer;">See All Product</button>
+                </div>
+                <div id="topProductsList" class="top-products-list"></div>
+              </article>
+            </section>
+
+            <section class="bottom-row">
+              <article class="orders-panel">
+                <div class="orders-head">
+                  <h3><span>25+</span> Orders Ready to be Shipped</h3>
+                  <div class="sort-box">Sort by : Best Sellers ▾</div>
+                </div>
+
+                <table class="order-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ordersTableBody"></tbody>
+                </table>
+              </article>
+
+              <aside class="donut-card">
+                <h3>Sales by Category</h3>
+                <div class="donut-wrap">
+                  <div class="donut"></div>
+                </div>
+                <div class="legend">
+                  <div class="legend-item"><span class="legend-dot" style="background:#f7a8c6"></span> Women</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#f3d2e1"></span> Home</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#b9d8ff"></span> Men</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#bfead8"></span> Wellness</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#f1d8a8"></span> Kids</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#dfe6f4"></span> Other</div>
+                </div>
+              </aside>
+            </section>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const statsGrid = document.getElementById('statsGrid');
+      const topProductsList = document.getElementById('topProductsList');
+      const ordersTableBody = document.getElementById('ordersTableBody');
+      const searchInput = document.getElementById('searchInput');
+      let products = [];
+
+      function getImage(product) {
+        const paths = Array.isArray(product.image_paths) ? product.image_paths : [];
+        const path = paths[0] || '';
+        if (!path) return 'https://placehold.co/80x80/f2eff3/666666?text=No+Image';
+        return path.startsWith('data/') ? `../${path}` : path;
+      }
+
+      function parsePrice(raw) {
+        if (!raw && raw !== 0) return 0;
+        const text = String(raw);
+        const nums = text.match(/\d+/g) || [];
+        const number = nums.length ? Number(nums.join('')) : 0;
+        return Number.isFinite(number) ? number : 0;
+      }
+
+      function formatMoney(value) {
+        const num = Number(value || 0);
+        return `${num.toLocaleString('vi-VN')}₫`;
+      }
+
+      function firstPrice(product) {
+        const text = String(product.price || '');
+        const values = text.split('_').map(parsePrice).filter(v => v > 0);
+        return values[0] || 0;
+      }
+
+      function renderStats(data) {
+        const totalProducts = data.length;
+        const totalCategories = new Set(data.map(item => item.category).filter(Boolean)).size;
+        const missing = data.filter(item => !(Array.isArray(item.image_paths) ? item.image_paths.length : Boolean(item.image_paths))).length;
+        const totalBalance = data.reduce((sum, item) => sum + firstPrice(item), 0);
+
+        const cards = [
+          { title: 'Total Customer', value: '2,320,000' },
+          { title: 'Total Order', value: formatMoney(totalBalance * 0.7) },
+          { title: 'Total Balance', value: formatMoney(totalBalance) },
+          { title: 'Earn Growth', value: '$50%' }
+        ];
+
+        statsGrid.innerHTML = cards.map((card, index) => `
+          <div class="stat-card">
+            <div class="stat-icon-wrap"><div class="stat-icon">${['👥', '🛍️', '$', '📈'][index]}</div></div>
+            <div class="stat-label">${card.title}</div>
+            <div class="stat-value">${card.value}</div>
+          </div>
+        `).join('');
+
+        if (totalProducts) {
+          const totalCountEl = statsGrid.firstElementChild.querySelector('.stat-value');
+          totalCountEl.textContent = String(totalProducts).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          const totalBalanceEl = statsGrid.children[2].querySelector('.stat-value');
+          totalBalanceEl.textContent = formatMoney(totalBalance);
+          const missingEl = document.createElement('div');
+          missingEl.style.display = 'none';
+        }
+      }
+
+      function renderTopProducts(data) {
+        const filtered = data.filter(product => product.product_name).slice(0, 3);
+        topProductsList.innerHTML = filtered.map((product, index) => `
+          <div class="top-product-item">
+            <img src="${getImage(product)}" alt="${product.product_name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f2eff3/666666?text=No+Image';" />
+            <div>
+              <div class="product-name">${product.product_name || 'Product'}</div>
+              <div class="product-price">${formatMoney(firstPrice(product))}</div>
+            </div>
+            <div class="product-price">${index === 0 ? 'Available' : 'Limited'}</div>
+            <div class="stock-pill">${index === 0 ? 'Available' : 'Limited'}</div>
+          </div>
+        `).join('');
+      }
+
+      function renderOrders(data) {
+        const rows = data.slice(0, 3);
+        ordersTableBody.innerHTML = rows.map((product, index) => `
+          <tr>
+            <td>
+              <div class="product-mini">
+                <img src="${getImage(product)}" alt="${product.product_name}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/f2eff3/666666?text=No+Image';" />
+                <span>${product.product_name || 'Product'}</span>
+              </div>
+            </td>
+            <td>${index === 0 ? '1x' : index === 1 ? '2x' : '3x'}</td>
+            <td>${index === 0 ? '<span class="status-paid">Paid</span>' : '<span class="status-pending">Not yet paid</span>'}</td>
+            <td>01/01/20${index + 1}</td>
+            <td>15:30</td>
+          </tr>
+        `).join('');
+      }
+
+      function filterProducts() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const filtered = products.filter(product => {
+          const text = [product.product_name, product.category, product.brand, product.usage].join(' ').toLowerCase();
+          return !keyword || text.includes(keyword);
+        });
+
+        renderStats(filtered);
+        renderTopProducts(filtered);
+        renderOrders(filtered);
+      }
+
+      fetch('../data/products_clean.json')
+        .then(res => res.json())
+        .then(data => {
+          products = Array.isArray(data) ? data : [];
+          renderStats(products);
+          renderTopProducts(products);
+          renderOrders(products);
+        })
+        .catch(() => {
+          statsGrid.innerHTML = '<div class="stat-card"><div class="stat-label">Dữ liệu</div><div class="stat-value">Không có</div></div>';
+          topProductsList.innerHTML = '<div class="top-product-item">Không có dữ liệu</div>';
+          ordersTableBody.innerHTML = '<tr><td colspan="5">Không có dữ liệu</td></tr>';
+        });
+
+      searchInput.addEventListener('input', filterProducts);
+    </script>
+  </body>
+</html>

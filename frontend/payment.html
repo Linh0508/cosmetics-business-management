@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment</title>
+    <style>
+      :root { --bg: #f8d9e5; --panel: #f3f5f7; --sidebar: #f6f4f4; --text: #1d1d22; --muted: #7c7880; --line: #eae5ea; --pink: #ff4f9c; --pink-soft: #ffe8f3; --blue: #4e9ef8; --green: #20b072; --orange: #f6a94d; --shadow: 0 18px 32px rgba(52, 30, 40, 0.08); }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); }
+      a { color: inherit; text-decoration: none; }
+      .page-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 30px; }
+      .app-window { width: min(1280px, 100%); background: rgba(255,255,255,0.22); border-radius: 28px; padding: 18px; }
+      .dashboard { display: grid; grid-template-columns: 210px 1fr; border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.12); }
+      .sidebar { background: var(--sidebar); padding: 20px 16px 12px; border-right: 1px solid var(--line); }
+      .brand { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin: 0 0 20px; padding-left: 10px; }
+      .nav { display: flex; flex-direction: column; gap: 8px; }
+      .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; color: #30323b; font-size: 15px; font-weight: 600; }
+      .nav-item.active { background: linear-gradient(90deg, #ff4f9c, #ff7fae); color: white; }
+      .nav-icon { width: 16px; text-align: center; }
+      .nav-spacer { height: 12px; }
+      .main { background: var(--panel); padding: 16px 18px 18px; }
+      .topbar { background: rgba(255,255,255,0.66); border: 1px solid rgba(155,155,160,0.22); border-radius: 18px; min-height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; gap: 18px; }
+      .profile { display: flex; align-items: center; gap: 12px; }
+      .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #dbc0c8, #d8abbc); position: relative; overflow: hidden; }
+      .avatar::before { content: ""; position: absolute; left: 12px; top: 8px; width: 18px; height: 18px; background: #3c2b2a; border-radius: 50%; }
+      .avatar::after { content: ""; position: absolute; left: 7px; bottom: 5px; width: 28px; height: 18px; background: #f7d7ab; border-radius: 14px 14px 12px 12px; }
+      .profile-text { font-size: 13px; color: var(--muted); }
+      .profile-text strong { display: block; font-size: 18px; color: var(--text); margin-top: 2px; }
+      .top-actions { display: flex; align-items: center; gap: 12px; }
+      .search-box { width: min(440px, 50vw); background: rgba(255,255,255,0.72); border: 1px solid var(--line); border-radius: 14px; display: flex; align-items: center; padding: 10px 14px; gap: 8px; }
+      .search-box input { border: none; outline: none; background: transparent; width: 100%; font-size: 15px; color: var(--text); }
+      .icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,0.7); display: grid; place-items: center; }
+      .cards { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 18px; margin-top: 22px; }
+      .card { background: rgba(255,255,255,0.72); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+      .label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      .value { margin-top: 12px; font-weight: 800; font-size: 30px; }
+      .table { width: 100%; border-collapse: collapse; margin-top: 22px; }
+      .table th, .table td { border-bottom: 1px solid var(--line); text-align: left; padding: 12px 10px; }
+      .table th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      .tag { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .tag.done { background: #eafaf1; color: #0f9a68; }
+      .tag.pending { background: #fff1d8; color: #c67a00; }
+      @media (max-width: 980px) { .dashboard { grid-template-columns: 1fr; } .sidebar { border-right: none; border-bottom: 1px solid var(--line); } .cards { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="app-window">
+        <div class="dashboard">
+          <aside class="sidebar">
+            <div class="brand">Logo</div>
+            <nav class="nav">
+              <a class="nav-item" href="admin.html"><span class="nav-icon">◔</span> Dashboard</a>
+              <a class="nav-item" href="analytics.html"><span class="nav-icon">◉</span> Analytics</a>
+              <a class="nav-item" href="products.html"><span class="nav-icon">◫</span> Products</a>
+              <a class="nav-item active" href="payment.html"><span class="nav-icon">◍</span> Payment</a>
+              <a class="nav-item" href="orders.html"><span class="nav-icon">◌</span> Orders</a>
+              <a class="nav-item" href="enquiry.html"><span class="nav-icon">⌕</span> Enquiry</a>
+              <a class="nav-item" href="marketing.html"><span class="nav-icon">◈</span> Marketing</a>
+              <a class="nav-item" href="setting.html"><span class="nav-icon">⚙</span> Setting</a>
+              <a class="nav-item" href="user.html"><span class="nav-icon">◷</span> User</a>
+              <div class="nav-spacer"></div>
+              <a class="nav-item" href="logout.html"><span class="nav-icon">⎋</span> Logout</a>
+            </nav>
+          </aside>
+
+          <main class="main">
+            <header class="topbar">
+              <div class="profile">
+                <div class="avatar"></div>
+                <div class="profile-text">Hi, Homesh!<strong>Welcome Back!</strong></div>
+              </div>
+              <div class="top-actions">
+                <div class="search-box"><span>⌕</span><input type="text" placeholder="Search payment" /></div>
+                <div class="icon-btn">◌</div>
+                <div class="icon-btn">🛒</div>
+              </div>
+            </header>
+
+            <section class="cards">
+              <div class="card"><div class="label">Doanh thu</div><div class="value">$18.9K</div></div>
+              <div class="card"><div class="label">Thanh toán</div><div class="value">1,243</div></div>
+              <div class="card"><div class="label">Tỷ lệ hoàn tất</div><div class="value">92%</div></div>
+            </section>
+
+            <table class="table">
+              <thead>
+                <tr><th>Khách hàng</th><th>Phương thức</th><th>Giá trị</th><th>Trạng thái</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Nguyen A</td><td>Visa</td><td>$120</td><td><span class="tag done">Hoàn tất</span></td></tr>
+                <tr><td>Tran B</td><td>PayPal</td><td>$89</td><td><span class="tag pending">Chờ xử lý</span></td></tr>
+                <tr><td>Le C</td><td>Bank</td><td>$210</td><td><span class="tag done">Hoàn tất</span></td></tr>
+              </tbody>
+            </table>
+          </main>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
